@@ -1,0 +1,58 @@
+The objective of this task was to test the effectiveness of various obfuscated XSS payloads in bypassing character-based filters enforced by a Web Application Firewall (WAF), specifically ModSecurity on DVWA running in "Medium" security mode.
+
+🧪 Testing Environment
+Target App: DVWA (Damn Vulnerable Web App)
+
+WAF: ModSecurity (default OWASP Core Rule Set)
+
+Security Level: Medium
+
+Browser: Google Chrome
+
+Platform: Kali Linux (Apache + DVWA + ModSecurity)
+
+⚙️ Payload Techniques Used
+Basic <script> injection
+
+Case manipulation (<ScRiPt>)
+
+Event handler injection (onerror, onload)
+
+HTML entity encoding (&#60;)
+
+Hex and Unicode encoding (\x3c, \u003c)
+
+Iframe and image-based execution
+
+Broken tag injections (<scr<script>ipt>)
+
+✅ Key Findings
+HTML Entity Encoding: Very effective. WAFs that rely on literal string matching for <script> often miss encoded characters like &#60;.
+
+Non-Standard Vectors: Payloads using <img> with onerror, <svg> with onload, or <body> with onload were able to bypass the WAF because they don’t contain the <script> keyword directly.
+
+Case Manipulation & Broken Tags: Not enough to fool most modern WAFs. They still catch <script> in any form.
+
+Hex/Unicode Encoding: WAFs often normalize input before filtering, making these encodings ineffective.
+
+JavaScript URI Injection: Detected by most WAFs when used in <iframe> or <a> tags.
+
+🔐 WAF Detection Mechanisms Observed
+Regex-based filters for key terms like script, javascript:, and common event handlers
+
+Character filtering for <, >, (, )
+
+Normalization of encoded payloads (e.g., Unicode/Hex)
+
+📌 Recommendations for Evasion
+Use non-<script> based vectors like <img>, <svg>, or <body> with event handlers.
+
+Leverage HTML entity encoding to disguise dangerous characters.
+
+Avoid relying on hex/unicode alone—test if normalization is in place.
+
+Obfuscate logic using inline JavaScript and delayed execution.
+
+⚠️ Disclaimer
+This project was conducted in a controlled environment for educational purposes only. Never attempt to bypass WAFs or exploit XSS vulnerabilities without explicit permission from the application owner.
+
